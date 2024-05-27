@@ -1,6 +1,7 @@
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:payment_ui/main.dart';
 import 'package:uicons/uicons.dart';
 
@@ -100,11 +101,38 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  final slideTransDuration = const Duration(milliseconds: 800);
+  late Animation<Offset> _slideAnimation;
+
+  late AnimationController _controller;
+
   @override
   void initState() {
-    // TODO: implement initState
+    _controller = AnimationController(
+      vsync: this,
+      duration: slideTransDuration,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: const Offset(0, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _controller.forward();
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -117,43 +145,9 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                          'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=600',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  Icon(UIcons.regularRounded.bell),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                'Welcome back',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              Text(
-                'Max Griffin',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              const SizedBox(
-                height: 32,
+              SlideTransition(
+                position: _slideAnimation,
+                child: const TopColumn(),
               ),
               Hero(
                 tag: videoUrl,
@@ -177,32 +171,104 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 32,
+              SlideTransition(
+                position: _slideAnimation,
+                child: BottomColumn(),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Invoices',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                  Icon(
-                    UIcons.regularRounded.arrow_right,
-                    color: Colors.grey,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              ...List.generate(4, (index) => const InvoiceItem()),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class BottomColumn extends StatelessWidget {
+  const BottomColumn({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 32,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Invoices',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            Icon(
+              UIcons.regularRounded.arrow_right,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        ...List.generate(4, (index) => const InvoiceItem()),
+      ],
+    );
+  }
+}
+
+class TopColumn extends StatelessWidget {
+  const TopColumn({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                image: const DecorationImage(
+                  image: NetworkImage(
+                    'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=600',
+                  ),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+            Icon(UIcons.regularRounded.bell),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          'Welcome back',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        Text(
+          'Max Griffin',
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(
+          height: 32,
+        ),
+      ],
     );
   }
 }

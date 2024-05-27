@@ -21,10 +21,13 @@ class OnBoardingPage extends StatefulWidget {
 class _OnBoardingPageState extends State<OnBoardingPage>
     with AutomaticKeepAliveClientMixin {
   late CachedVideoPlayerController _controller;
+  late PageController _pageViewCtrl;
 
   @override
   void initState() {
     super.initState();
+    _pageViewCtrl = PageController();
+
     _controller = CachedVideoPlayerController.network(videoUrl)
       ..initialize().then((_) {
         setState(() {});
@@ -56,11 +59,14 @@ class _OnBoardingPageState extends State<OnBoardingPage>
       if (!_controller.value.isPlaying) {
         await _controller.play();
       }
+
       selectedIndex++;
       setState(() {});
+      _pageViewCtrl.animateToPage(selectedIndex,
+          duration: const Duration(seconds: 2), curve: Curves.easeInOut);
 
       await _controller.setPlaybackSpeed(2);
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 2));
       await _controller.pause();
 
       return;
@@ -119,56 +125,90 @@ class _OnBoardingPageState extends State<OnBoardingPage>
                   Row(
                     children: [
                       InkWell(
-                        onTap: () {
-                          if (selectedIndex == 0) {
-                            return;
-                          }
+                          onTap: () {
+                            if (selectedIndex == 0) {
+                              return;
+                            }
 
-                          setState(() {
-                            selectedIndex--;
-                          });
-                        },
-                        child: (selectedIndex == 0)
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                              )
-                            : Icon(
-                                UIcons.regularRounded.arrow_left,
-                                color: Colors.white,
-                              ),
-                      ),
+                            setState(() {
+                              selectedIndex--;
+                            });
+                          },
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            child: (selectedIndex == 0)
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                  )
+                                : Icon(
+                                    UIcons.regularRounded.arrow_left,
+                                    color: Colors.white,
+                                  ),
+                          )),
                     ],
                   ),
                   Column(
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            infos[selectedIndex].keys.single,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineLarge
-                                ?.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 42,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            infos[selectedIndex].values.single,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                          const SizedBox(height: 24),
-                        ],
+                      SizedBox(
+                        height: 200,
+                        child: PageView.builder(
+                            controller: _pageViewCtrl,
+                            itemCount: infos.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    infos[index].keys.single,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontSize: 42,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    infos[index].values.single,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              );
+                            }),
+                      ),
+                      Row(
+                        children: List.generate(infos.length, (idx) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 2.0),
+                            child: AnimatedContainer(
+                              width: (selectedIndex == idx) ? 20 : 8,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: (selectedIndex == idx)
+                                    ? Colors.white
+                                    : Colors.grey,
+                              ),
+                              duration: const Duration(
+                                seconds: 2,
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                      const SizedBox(
+                        height: 30,
                       ),
                       SizedBox(
                         width: double.infinity,
@@ -184,7 +224,9 @@ class _OnBoardingPageState extends State<OnBoardingPage>
                               )),
                           onPressed: _onNextTapped,
                           child: Text(
-                            selectedIndex == infos.length ? "Start" : 'Next',
+                            selectedIndex == (infos.length - 1)
+                                ? "Start"
+                                : 'Next',
                             style: const TextStyle(
                               fontSize: 16,
                               color: Colors.black,
