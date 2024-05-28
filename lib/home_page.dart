@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -214,7 +216,7 @@ class BottomColumn extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        ...List.generate(4, (index) => const InvoiceItem()),
+        ...List.generate(5, (index) => const InvoiceItem()),
       ],
     );
   }
