@@ -4,7 +4,9 @@ import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:payment_ui/details_page.dart';
 import 'package:payment_ui/main.dart';
+import 'package:payment_ui/utils.dart';
 import 'package:uicons/uicons.dart';
 
 class BasePage extends StatefulWidget {
@@ -159,23 +161,83 @@ class _HomePageState extends State<HomePage>
                   child: Container(
                     color: Colors.black,
                     width: double.infinity,
+                    height: 200,
                     alignment: Alignment.center,
-                    child: Transform.scale(
-                      scale: 4,
-                      child: Transform.translate(
-                        offset: const Offset(-100, 0),
-                        child: AspectRatio(
-                          aspectRatio: widget.controller.value.aspectRatio,
-                          child: CachedVideoPlayer(widget.controller),
+                    child: Stack(
+                      children: [
+                        Transform.scale(
+                          scale: 4,
+                          child: Transform.translate(
+                            offset: const Offset(80, -60),
+                            child: AspectRatio(
+                              aspectRatio: widget.controller.value.aspectRatio,
+                              child: CachedVideoPlayer(widget.controller),
+                            ),
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 24.0,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Balance',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          color: const Color(0xff939494),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                  Icon(
+                                    UIcons.boldRounded.menu_dots,
+                                    color: Colors.white,
+                                    size: 29,
+                                  )
+                                ],
+                              ),
+                              Text(
+                                '\$3719.98',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayMedium
+                                    ?.copyWith(
+                                      height: -0.5,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                              Text(
+                                '.3815',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      color: const Color(0xff939494),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
               SlideTransition(
                 position: _slideAnimation,
-                child: BottomColumn(),
+                child: const BottomColumn(),
               ),
             ],
           ),
@@ -216,7 +278,12 @@ class BottomColumn extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        ...List.generate(5, (index) => const InvoiceItem()),
+        ...List.generate(
+          invoices.length,
+          (index) => InvoiceItem(
+            data: invoices[index],
+          ),
+        ),
       ],
     );
   }
@@ -278,89 +345,127 @@ class TopColumn extends StatelessWidget {
 class InvoiceItem extends StatelessWidget {
   const InvoiceItem({
     super.key,
+    required this.data,
   });
+
+  final InvoiceData data;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Card(
-        elevation: 5,
-        shadowColor: Colors.grey.withOpacity(0.2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        color: Colors.white,
-        surfaceTintColor: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                          'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=600',
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => DetailsPage(
+                    invoiceData: data,
+                  )));
+        },
+        child: Card(
+          elevation: 5,
+          shadowColor: Colors.grey.withOpacity(0.2),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.white,
+          surfaceTintColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(data.image),
+                          fit: BoxFit.cover,
                         ),
-                        fit: BoxFit.cover,
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      borderRadius: BorderRadius.circular(15),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Marcos Avery',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        '#0912837628',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.grey,
-                            ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.receiverName,
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          '#${data.id}',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.grey,
+                                  ),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      'done',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    StatusContainer(status: data.status),
+                    Text(
+                      '\$${(data.subtotal + data.tax)}',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: Colors.grey,
                           ),
                     ),
-                  ),
-                  Text(
-                    '\$37,197.9',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class StatusContainer extends StatelessWidget {
+  const StatusContainer({
+    super.key,
+    required this.status,
+  });
+
+  final InvoiceStatus status;
+
+  Color _getTextColor() {
+    switch (status) {
+      case InvoiceStatus.draft:
+        return Colors.grey;
+      case InvoiceStatus.done:
+        return Colors.green;
+      case InvoiceStatus.rejected:
+        return Colors.red;
+      default:
+        return Colors.orangeAccent;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: _getTextColor().withOpacity(0.2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        status.name,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: _getTextColor(),
+            ),
       ),
     );
   }

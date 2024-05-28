@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         primaryColor: Color(0xff080A0B),
+        hintColor: Color(0xff939494),
         scaffoldBackgroundColor: Color(0xffF5F5F5),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Color(0xff080A0B),
