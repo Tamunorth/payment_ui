@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:payment_ui/details_page.dart';
+import 'package:payment_ui/pages/details_page.dart';
 
 ///SLOW NAVIGATION TRANSITION
 class SlowTransitionPageRoute<T> extends MaterialPageRoute<T> {

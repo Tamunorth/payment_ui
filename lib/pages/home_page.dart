@@ -4,95 +4,11 @@ import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:payment_ui/details_page.dart';
+import 'package:payment_ui/pages/details_page.dart';
 import 'package:payment_ui/main.dart';
 import 'package:payment_ui/utils.dart';
+import 'package:payment_ui/widgets/invoice_item.dart';
 import 'package:uicons/uicons.dart';
-
-class BasePage extends StatefulWidget {
-  const BasePage({super.key, required this.controller});
-  final CachedVideoPlayerController controller;
-
-  @override
-  State<BasePage> createState() => _BasePageState();
-}
-
-class _BasePageState extends State<BasePage> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    pages = [
-      HomePage(
-        controller: widget.controller,
-      ),
-      Container(),
-      Container(),
-    ];
-  }
-
-  List pages = [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: pages.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        enableFeedback: false,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.square_sharp,
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: SizedBox(
-              height: 55,
-              child: FloatingActionButton(
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: CircleBorder(),
-                elevation: 0,
-                onPressed: null,
-                child: Icon(
-                  Icons.add,
-                  size: 28,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            label: 'Schools',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.settings,
-            ),
-            label: 'Schools',
-          ),
-        ],
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        currentIndex: _selectedIndex,
-        unselectedFontSize: 0,
-        selectedFontSize: 0,
-        unselectedItemColor: Theme.of(context).primaryColor.withOpacity(0.2),
-        selectedItemColor: Theme.of(context).primaryColor,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -151,7 +67,7 @@ class _HomePageState extends State<HomePage>
             children: [
               SlideTransition(
                 position: _slideAnimation,
-                child: const TopColumn(),
+                child: const _TopColumn(),
               ),
               Hero(
                 tag: videoUrl,
@@ -237,7 +153,7 @@ class _HomePageState extends State<HomePage>
               ),
               SlideTransition(
                 position: _slideAnimation,
-                child: const BottomColumn(),
+                child: const _BottomColumn(),
               ),
             ],
           ),
@@ -247,8 +163,8 @@ class _HomePageState extends State<HomePage>
   }
 }
 
-class BottomColumn extends StatelessWidget {
-  const BottomColumn({
+class _BottomColumn extends StatelessWidget {
+  const _BottomColumn({
     super.key,
   });
 
@@ -295,8 +211,8 @@ class BottomColumn extends StatelessWidget {
   }
 }
 
-class TopColumn extends StatelessWidget {
-  const TopColumn({
+class _TopColumn extends StatelessWidget {
+  const _TopColumn({
     super.key,
   });
 
@@ -344,140 +260,6 @@ class TopColumn extends StatelessWidget {
           height: 20,
         ),
       ],
-    );
-  }
-}
-
-class InvoiceItem extends StatelessWidget {
-  const InvoiceItem({
-    super.key,
-    required this.data,
-  });
-
-  final InvoiceData data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3.0),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.of(context).push(
-            SlowTransitionPageRoute(
-              builder: (context) =>
-                  Scaffold(body: DetailsPage(invoiceData: data)),
-            ),
-          );
-        },
-        child: Card(
-          elevation: 5,
-          shadowColor: Colors.grey.withOpacity(0.2),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          color: Colors.white,
-          surfaceTintColor: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).hintColor.withOpacity(0.2),
-                        image: data.image.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(data.image),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          data.receiverName,
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          '#${data.id}',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.grey,
-                                  ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    StatusContainer(status: data.status),
-                    Text(
-                      '\$${(data.subtotal + data.tax)}',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class StatusContainer extends StatelessWidget {
-  const StatusContainer({
-    super.key,
-    required this.status,
-  });
-
-  final InvoiceStatus status;
-
-  Color _getTextColor() {
-    switch (status) {
-      case InvoiceStatus.draft:
-        return Colors.grey;
-      case InvoiceStatus.done:
-        return Colors.green;
-      case InvoiceStatus.rejected:
-        return Colors.red;
-      default:
-        return Colors.orangeAccent;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: _getTextColor().withOpacity(0.2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        status.name,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: _getTextColor(),
-            ),
-      ),
     );
   }
 }

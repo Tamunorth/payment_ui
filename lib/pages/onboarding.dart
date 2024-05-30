@@ -5,11 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:payment_ui/home_page.dart';
+import 'package:payment_ui/pages/base_page.dart';
+import 'package:payment_ui/pages/home_page.dart';
 import 'package:uicons/uicons.dart';
 // import 'package:video_player/video_player.dart';
 
-import 'main.dart';
+import '../main.dart';
 
 class OnBoardingPage extends StatefulWidget {
   const OnBoardingPage({super.key});
