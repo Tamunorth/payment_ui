@@ -46,49 +46,49 @@ class _BasePageState extends State<BasePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: pages.elementAt(_selectedIndex),
-      bottomNavigationBar: SizedBox(
-        child: BottomNavigationBar(
-          enableFeedback: false,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.square_sharp,
-              ),
-              label: 'Home',
+      bottomNavigationBar: BottomNavigationBar(
+        enableFeedback: false,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.square_sharp,
             ),
-            BottomNavigationBarItem(
-              icon: SizedBox(
-                height: 55,
-                child: FloatingActionButton(
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  shape: CircleBorder(),
-                  elevation: 0,
-                  onPressed: null,
-                  child: Icon(
-                    Icons.add,
-                    size: 28,
-                    color: Colors.white,
-                  ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: SizedBox(
+              height: 55,
+              child: FloatingActionButton(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: CircleBorder(),
+                elevation: 0,
+                onPressed: null,
+                child: Icon(
+                  Icons.add,
+                  size: 28,
+                  color: Colors.white,
                 ),
               ),
-              label: 'Schools',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.settings,
-              ),
-              label: 'Schools',
+            label: 'Schools',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.settings,
             ),
-          ],
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          currentIndex: _selectedIndex,
-          unselectedItemColor: Theme.of(context).primaryColor.withOpacity(0.2),
-          selectedItemColor: Theme.of(context).primaryColor,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          onTap: _onItemTapped,
-        ),
+            label: 'Schools',
+          ),
+        ],
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        currentIndex: _selectedIndex,
+        unselectedFontSize: 0,
+        selectedFontSize: 0,
+        unselectedItemColor: Theme.of(context).primaryColor.withOpacity(0.2),
+        selectedItemColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -258,7 +258,7 @@ class BottomColumn extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(
-          height: 32,
+          height: 24,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -278,12 +278,18 @@ class BottomColumn extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        ...List.generate(
-          invoices.length,
-          (index) => InvoiceItem(
-            data: invoices[index],
-          ),
-        ),
+        ValueListenableBuilder(
+            valueListenable: invoices,
+            builder: (context, invoicesValue, child) {
+              return Column(
+                children: List.generate(
+                  invoicesValue.take(3).length,
+                  (index) => InvoiceItem(
+                    data: invoicesValue[index],
+                  ),
+                ),
+              );
+            })
       ],
     );
   }
@@ -335,7 +341,7 @@ class TopColumn extends StatelessWidget {
               ),
         ),
         const SizedBox(
-          height: 32,
+          height: 20,
         ),
       ],
     );
@@ -353,13 +359,15 @@ class InvoiceItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: InkWell(
+      padding: const EdgeInsets.symmetric(vertical: 3.0),
+      child: GestureDetector(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => DetailsPage(
-                    invoiceData: data,
-                  )));
+          Navigator.of(context).push(
+            SlowTransitionPageRoute(
+              builder: (context) =>
+                  Scaffold(body: DetailsPage(invoiceData: data)),
+            ),
+          );
         },
         child: Card(
           elevation: 5,
@@ -379,10 +387,13 @@ class InvoiceItem extends StatelessWidget {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(data.image),
-                          fit: BoxFit.cover,
-                        ),
+                        color: Theme.of(context).hintColor.withOpacity(0.2),
+                        image: data.image.isNotEmpty
+                            ? DecorationImage(
+                                image: NetworkImage(data.image),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
