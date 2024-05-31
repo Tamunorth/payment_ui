@@ -373,40 +373,7 @@ class _DetailsPageState extends State<DetailsPage>
                     ),
                     onPressed: _selectedReceiver!.image.isEmpty
                         ? null
-                        : () async {
-                            isLoading.value = true;
-
-                            invoices.value.removeAt(0);
-
-                            invoices.value.insert(
-                              0,
-                              InvoiceData(
-                                id: 'INV001',
-                                image: _selectedReceiver?.image ?? '',
-                                status: InvoiceStatus.done,
-                                receiverName:
-                                    _selectedReceiver?.receiverName ?? '',
-                                receiverEmail:
-                                    _selectedReceiver?.receiverEmail ?? '',
-                                subtotal: 100.50,
-                                tax: 8.50,
-                              ),
-                            );
-
-                            await Future.delayed(const Duration(seconds: 2),
-                                () {
-                              isLoading.value = false;
-                              invoices.notifyListeners();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  elevation: 0,
-                                  backgroundColor: Colors.transparent,
-                                  content: CustomSnackBar(),
-                                ),
-                              );
-                              // Navigator.pop(context);
-                            });
-                          },
+                        : _createInvoice,
                     child: isLoadingValue
                         ? const SizedBox(
                             height: 16,
@@ -431,5 +398,40 @@ class _DetailsPageState extends State<DetailsPage>
                 ),
               );
             }));
+  }
+
+  _createInvoice() async {
+    isLoading.value = true;
+
+    invoices.value.removeAt(0);
+
+    invoices.value.insert(
+      0,
+      InvoiceData(
+        id: 'INV001',
+        image: _selectedReceiver?.image ?? '',
+        status: InvoiceStatus.pending,
+        receiverName: _selectedReceiver?.receiverName ?? '',
+        receiverEmail: _selectedReceiver?.receiverEmail ?? '',
+        subtotal: 100.50,
+        tax: 8.50,
+      ),
+    );
+
+    await Future.delayed(const Duration(seconds: 2), () async {
+      isLoading.value = false;
+      invoices.notifyListeners();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          content: CustomSnackBar(),
+        ),
+      );
+    });
+    await Future.delayed(const Duration(seconds: 3), () async {
+      Navigator.pop(context);
+    });
   }
 }
