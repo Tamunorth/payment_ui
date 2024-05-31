@@ -63,7 +63,7 @@ ValueNotifier<List<InvoiceData>> invoices = ValueNotifier(
       id: 'INV005',
       image:
           'https://images.pexels.com/photos/1680010/pexels-photo-1680010.jpeg?auto=compress&cs=tinysrgb&w=200',
-      status: InvoiceStatus.done,
+      status: InvoiceStatus.pending,
       receiverName: 'Dan Fresh',
       receiverEmail: 'dan.dresh@example.com',
       subtotal: 1000.00,

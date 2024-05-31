@@ -35,9 +35,6 @@ class _OnBoardingPageState extends State<OnBoardingPage>
         _controller.play();
         _controller.setLooping(true);
         _controller.setPlaybackSpeed(0.5);
-        Future.delayed(const Duration(seconds: 2), () async {
-          _controller.pause();
-        });
       });
   }
 
@@ -68,7 +65,7 @@ class _OnBoardingPageState extends State<OnBoardingPage>
 
       await _controller.setPlaybackSpeed(2);
       await Future.delayed(const Duration(seconds: 2));
-      await _controller.pause();
+      _controller.setPlaybackSpeed(0.5);
 
       return;
     }
